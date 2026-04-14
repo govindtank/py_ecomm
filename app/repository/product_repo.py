@@ -1,10 +1,24 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.models.product import Product
 
 class ProductRepository:
 
     def create_product(self, db: Session, data):
-        product= Product(**data.dict())
+        # Check if product with same name and category already exists
+        existing_product = db.query(Product).filter(
+            Product.name == data.name,
+            Product.category_id == data.category_id,
+            Product.is_deleted == False
+        ).first()
+
+        if existing_product:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Product '{data.name}' already exists in this category"
+            )
+
+        product = Product(**data.dict())
         db.add(product)
         db.commit()
         db.refresh(product)

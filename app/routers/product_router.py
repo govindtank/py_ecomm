@@ -22,6 +22,7 @@ def get_products(
         limit: int = 10,
         search: str = None,
         category_id : int = None,
+        category_name: str = None,
         min_price : float = None,
         max_price : float = None,
         sort_by : str = None,
@@ -32,6 +33,7 @@ def get_products(
     filters = {
         "search": search,
         "category_id": category_id,
+        "category_name": category_name,
         "min_price": min_price,
         "max_price": max_price,
         "sort_by": sort_by,

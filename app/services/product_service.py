@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app.repository.product_repo import ProductRepository
 from app.models.product import Product
-
+from app.models.category import Category
 
 repo= ProductRepository()
 
@@ -21,8 +21,13 @@ class ProductService:
         #catgory filter
         if filters.get("category_id"):
             query = query.filter(Product.category_id == filters['category_id'])
+        elif filters.get("category_name"):
+            query = query.join(Category).filter(
+                Category.name.ilike(f"%{filters['category_name']}%"),
+                Category.is_deleted == False)
 
-        #price wise filter
+
+            #price wise filter
         if filters.get("min_price"):
             query= query.filter(Product.price >= filters["min_price"])
         if filters.get("max_price"):
@@ -39,6 +44,7 @@ class ProductService:
                 if filters.get("order") == "desc":
                     column = column.desc()
                 query = query.order_by(column)
+
 
         page = filters.get("page", 1)
         limit = filters.get("limit", 10)
