@@ -51,12 +51,3 @@ class CategoryRepository:
         db.commit()
         return category
 
-    # def get_category_stats(self, db: Session, category_id: int):
-    #     category=db.query(Category).filter(Category.id == category_id).first()
-    #     if not category:
-    #         raise HTTPException(status_code=404, detail="Category not found")
-    #     product_count=db.query(Product).filter(Product.category_id== category.id,
-    #                                            Product.is_deleted==False).count()
-    #     return {"product_count": product_count,
-    #             "category":category,
-    #             "can_delete":product_count==0}
