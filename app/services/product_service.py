@@ -14,11 +14,13 @@ class ProductService:
 
         #search func
         if filters.get("search"):
-            query = db.query(Product).filter(Product.name.ilike(f"${filters['search']}%"))
+            # query = db.query(Product).filter(Product.name.ilike(f"${filters['search']}%"))
+            search_term = f"%{filters['search']}%"
+            query = query.filter(Product.name.ilike(search_term))
 
         #catgory filter
         if filters.get("category_id"):
-            query = db.query(Product).filter(Product.category_id == filters['category_id'])
+            query = query.filter(Product.category_id == filters['category_id'])
 
         #price wise filter
         if filters.get("min_price"):
@@ -28,10 +30,15 @@ class ProductService:
 
         #sorting mechinsm
         if filters.get("sort_by"):
-            column= getattr(Product, filters["sort_by"])
-            if filters.get("sort") == "desc":
-                column = column.desc()
-            query = query.order_by(column)
+            valid_columns = ['id', 'name', 'price', 'created_at', 'description',  'category_id']
+            sort_column = filters["sort_by"]
+
+            if sort_column in valid_columns:
+                column = getattr(Product, sort_column)
+
+                if filters.get("order") == "desc":
+                    column = column.desc()
+                query = query.order_by(column)
 
         page = filters.get("page", 1)
         limit = filters.get("limit", 10)
