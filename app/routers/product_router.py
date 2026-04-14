@@ -28,7 +28,17 @@ def get_products(
         order : str = 'asc',
         db: Session = Depends(get_db)
 ):
-    filters=locals()
+    # filters=locals()
+    filters = {
+        "search": search,
+        "category_id": category_id,
+        "min_price": min_price,
+        "max_price": max_price,
+        "sort_by": sort_by,
+        "order": order,
+        "page": page,
+        "limit": limit
+    }
     products = service.get_products(db, filters)
     return success_response(products, "Products fetched successfully")
 
