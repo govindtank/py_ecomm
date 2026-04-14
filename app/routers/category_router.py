@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.services.category_service import CategoryService
@@ -30,8 +30,11 @@ def update_category(category_id: int, data: CategoryUpdate, db: Session = Depend
 
 @router.delete("/{category_id}")
 def delete_category(category_id: int, db: Session= Depends(get_db)):
-    category = service.get_category_by_id(db, category_id)
-    if not category:
-        return error_response("Category not found", 404)
-    service.soft_delete_category(db, category)
-    return success_response("Category deleted successfully")
+        try:
+            category = service.get_category_by_id(db, category_id)
+            if not category:
+               return error_response("Category not found", 404)
+            service.soft_delete_category(db, category)
+            return success_response("Category deleted successfully")
+        except HTTPException as e:
+            return error_response(e.detail, e.status_code)

@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, DateTime
 from datetime import datetime
 from app.core.database import Base
+from sqlalchemy.orm import relationship
 
 class Product(Base):
     __tablename__ = "products"
@@ -13,3 +14,4 @@ class Product(Base):
     is_deleted = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.now)
 
+    category = relationship("Category", backref="products")

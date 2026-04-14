@@ -10,7 +10,10 @@ class ProductService:
         return repo.create_product(db, data)
 
     def get_products(self, db: Session, filters):
-        query = db.query(Product).filter(Product.is_deleted == False)
+        # query = db.query(Product).filter(Product.is_deleted == False)
+        query = db.query(Product, Category.name.label("catagory_name")).join(Category).filter(
+            Product.is_deleted==False, Category.is_deleted==False        )
+
 
         #search func
         if filters.get("search"):
@@ -50,7 +53,21 @@ class ProductService:
         limit = filters.get("limit", 10)
 
         total = query.count()
-        items= query.offset((page-1)*limit).limit(limit).all()
+        # items= query.offset((page-1)*limit).limit(limit).all()
+        items=[]
+        for product, category_name in query.offset((page-1)*limit).limit(limit).all():
+            product_dict={
+                "id": product.id,
+                "name": product.name,
+                "description": product.description,
+                "price":product.price,
+                "category_id":product.category_id,
+                "category_name":category_name,
+                "is_deleted":product.is_deleted,
+                "created_at":product.created_at
+            }
+            items.append(product_dict)
+
 
         return{
             "total": total,
@@ -60,8 +77,23 @@ class ProductService:
         }
 
     def get_product_by_id(self, db: Session, product_id : int):
-        return repo.get_product_by_id(db, product_id)
+        # return repo.get_product_by_id(db, product_id)
+        result = (db.query(Product, Category.name.label("category_name")).join(Category)
+                  .filter(Product.id ==product_id, Product.is_deleted==False, Category.is_deleted==False).first())
 
+        if result:
+            product, category_name=result
+            return{
+                "id":product.id,
+                "name":product.name,
+                "description":product.description,
+                "price":product.price,
+                "category_id":product.category_id,
+                "category_name":category_name,
+                "is_deleted":product.is_deleted,
+                "created_at":product.created_at
+            }
+        return None
 
     def update_product(self, db, product, data):
         return repo.update_product(db, product, data)
