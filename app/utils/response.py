@@ -1,4 +1,4 @@
-
+from app.utils.converters import convert_dict_keys_to_camel
 
 
 def success_response(data=None, message="Success"):
@@ -7,7 +7,7 @@ def success_response(data=None, message="Success"):
         "statusCode": 200,
         "message": message,
         "error": None,
-        "data": data
+        "data": convert_dict_keys_to_camel(data) if data else None
 
     }
 

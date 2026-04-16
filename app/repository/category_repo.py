@@ -25,7 +25,7 @@ class CategoryRepository:
         return category
 
     def get_all_categories(self, db: Session):
-        return db.query(Category).all()
+        return db.query(Category).filter(Category.is_deleted == False).order_by(Category.id).all()
 
     def get_category_by_id(self, db: Session, category_id: int):
         return db.query(Category).filter(Category.id == category_id, Category.is_deleted == False).first()
