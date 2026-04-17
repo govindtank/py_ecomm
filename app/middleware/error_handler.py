@@ -6,14 +6,16 @@ import logging
 logger= logging.getLogger(__name__)
 
 async def global_exception_handler(request: Request, exc: Exception):
-    logger.error(f"Global exception: {str(exc)}", exc_info=True)
+    request_id = getattr(request.state, "request_id", "unknown")
+    logger.error(f"Global exception [Request ID: {request_id}]: {str(exc)}", exc_info=True)
     return JSONResponse(
         status_code=500,
-        content=error_response("Internal server error", str(exc), 500)
+        content=error_response("Internal server error", None, 500)
     )
 
 async def http_exception_handler(request: Request, exc: HTTPException):
-    logger.warning(f"HTTP exception: {exc.status_code} - {exc.detail}")
+    request_id = getattr(request.state, "request_id", "unknown")
+    logger.warning(f"HTTP exception [Request ID: {request_id}]: {exc.status_code} - {exc.detail}")
     return JSONResponse(
         status_code=exc.status_code,
         content=error_response(exc.detail, None, exc.status_code)

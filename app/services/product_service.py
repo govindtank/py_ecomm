@@ -11,7 +11,7 @@ class ProductService:
 
     def get_products(self, db: Session, filters):
         # query = db.query(Product).filter(Product.is_deleted == False)
-        query = db.query(Product, Category.name.label("catagory_name")).join(Category).filter(
+        query = db.query(Product, Category.name.label("category_name")).join(Category).filter(
             Product.is_deleted==False, Category.is_deleted==False        )
 
 

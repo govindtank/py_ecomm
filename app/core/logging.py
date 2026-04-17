@@ -3,9 +3,9 @@ import sys
 from pythonjsonlogger import jsonlogger
 
 
-def setup_logging():
+def setup_logging(log_level="INFO"):
     logger= logging.getLogger()
-    logger.setLevel(logging.INFO)
+    logger.setLevel(getattr(logging, log_level.upper()))
 
     logger.handlers.clear()
 
